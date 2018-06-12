@@ -4,7 +4,6 @@
 
 
 let query = location.search.replace('\?', '').split('&');
-
 let funds = query.reduce((memo, current) => {
     let queryPair = current.split("=");
     let fund = queryPair[0].replace(/%20/g, ' ');
@@ -14,9 +13,10 @@ let funds = query.reduce((memo, current) => {
     let statMap = {}
     fundStats.forEach(stat => {
         stat = stat.split(":");
+        
         let statName = stat[0].replace(/%20/g, '');
 
-        statMap[stat[0]] = stat[1];
+        statMap[stat[0]] = stat[1].replace('%','');
     })
     memo.set(fund, statMap);
     return memo;
@@ -41,6 +41,7 @@ stats.forEach(stat => {
 })
 
 for (let stat in data) {
+    if (stat.indexOf('peerpercentile') >= 0) continue;
     // set the dimensions and margins of the graph
     var margin = { top: 40, right: 20, bottom: 30, left: 50 },
         width = (window.innerWidth / 3) - margin.left - margin.right,
@@ -64,13 +65,13 @@ for (let stat in data) {
     // get the data
 
     let containsNeg = data[stat].some(d => {
-        console.log(d.val)
+
         return d.value < 0
     })
-    console.log(data[stat], containsNeg)
+
     x.domain(data[stat].map(function (d) { return d.fundName; }))
     y.domain(containsNeg ? [d3.min(data[stat],function(d){return d.value}), d3.max(data[stat], function(d) { return d.value; })] : [0, d3.max(data[stat], function (d) { return d.value; })]);
-
+    console.log(data)
     // append the rectangles for the bar chart
     svg.selectAll(".bar")
         .data(data[stat])
