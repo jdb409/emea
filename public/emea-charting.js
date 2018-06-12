@@ -40,6 +40,7 @@ stats.forEach(stat => {
     })
 })
 
+// Create chart for each stat
 for (let stat in data) {
     if (stat.indexOf('peerpercentile') >= 0) continue;
     // set the dimensions and margins of the graph
@@ -71,7 +72,7 @@ for (let stat in data) {
 
     x.domain(data[stat].map(function (d) { return d.fundName; }))
     y.domain(containsNeg ? [d3.min(data[stat],function(d){return d.value}), d3.max(data[stat], function(d) { return d.value; })] : [0, d3.max(data[stat], function (d) { return d.value; })]);
-    console.log(data)
+
     // append the rectangles for the bar chart
     svg.selectAll(".bar")
         .data(data[stat])
@@ -90,7 +91,9 @@ for (let stat in data) {
             return d.fundName;
         })
         .attr('id', function (d) {
-            return d.value;
+            console.log('asdfs', addPercentage(stat));
+            
+            return addPercentage(stat) ? d.value + '%' : d.value;
         });
 
     stat = stat.replace(/%20/g, '');
@@ -122,4 +125,9 @@ for (let stat in data) {
             $('#stat').html($(this).attr('id'));
         });
     });
+}
+
+function addPercentage(stat){
+
+    return !stat.toLowerCase().includes("sharpe") && !stat.toLowerCase().includes("beta") && !stat.toLowerCase().includes("sortino"); 
 }
