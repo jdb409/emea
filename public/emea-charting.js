@@ -4,21 +4,25 @@
 
 
 let query = location.search.replace('\?', '').split('&');
+
 let funds = query.reduce((memo, current) => {
     let queryPair = current.split("=");
-    let fund = queryPair[0].replace(/%20/g, ' ');
-    let trimmed = queryPair[1].replace('[', '');
-    trimmed = trimmed.replace(']', '');
-    let fundStats = trimmed.split(",")
-    let statMap = {}
-    fundStats.forEach(stat => {
-        stat = stat.split(":");
-        
-        let statName = stat[0].replace(/%20/g, '');
+    console.log(queryPair[1])
+    if (queryPair[1] != undefined) {
+        let fund = queryPair[0].replace(/%20/g, ' ');
+        let trimmed = queryPair[1].replace('[', '');
+        trimmed = trimmed.replace(']', '');
+        let fundStats = trimmed.split(",")
+        let statMap = {}
+        fundStats.forEach(stat => {
+            stat = stat.split(":");
 
-        statMap[stat[0]] = stat[1].replace('%','');
-    })
-    memo.set(fund, statMap);
+            let statName = stat[0].replace(/%20/g, '');
+
+            statMap[stat[0]] = stat[1].replace('%', '');
+        })
+        memo.set(fund, statMap);
+    }
     return memo;
 }, new Map())
 
@@ -71,7 +75,7 @@ for (let stat in data) {
     })
 
     x.domain(data[stat].map(function (d) { return d.fundName; }))
-    y.domain(containsNeg ? [d3.min(data[stat],function(d){return d.value}), d3.max(data[stat], function(d) { return d.value; })] : [0, d3.max(data[stat], function (d) { return d.value; })]);
+    y.domain(containsNeg ? [d3.min(data[stat], function (d) { return d.value }), d3.max(data[stat], function (d) { return d.value; })] : [0, d3.max(data[stat], function (d) { return d.value; })]);
 
     // append the rectangles for the bar chart
     svg.selectAll(".bar")
@@ -81,10 +85,10 @@ for (let stat in data) {
         .attr("x", function (d) { return x(d.fundName); })
         .attr("width", x.bandwidth())
         // .attr("y", function (d) { return y(d.value); })
-        .attr("y", function(d) { return y(Math.max(0, d.value)); })
+        .attr("y", function (d) { return y(Math.max(0, d.value)); })
         // .attr("height", function (d) { return height - y(d.value); })
-        .attr("height", function(d) { return Math.abs(y(d.value) - y(0)); })
-        .attr('fill', function(d){
+        .attr("height", function (d) { return Math.abs(y(d.value) - y(0)); })
+        .attr('fill', function (d) {
             return d.value > 0 ? 'steelblue' : 'red';
         })
         .attr('class', function (d) {
@@ -92,7 +96,7 @@ for (let stat in data) {
         })
         .attr('id', function (d) {
             console.log('asdfs', addPercentage(stat));
-            
+
             return addPercentage(stat) ? d.value + '%' : d.value;
         });
 
@@ -127,7 +131,7 @@ for (let stat in data) {
     });
 }
 
-function addPercentage(stat){
+function addPercentage(stat) {
 
-    return !stat.toLowerCase().includes("sharpe") && !stat.toLowerCase().includes("beta") && !stat.toLowerCase().includes("sortino"); 
+    return !stat.toLowerCase().includes("sharpe") && !stat.toLowerCase().includes("beta") && !stat.toLowerCase().includes("sortino");
 }
