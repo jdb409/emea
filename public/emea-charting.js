@@ -7,8 +7,9 @@ let query = location.search.replace('\?', '').split('&');
 
 let funds = query.reduce((memo, current) => {
     let queryPair = current.split("=");
-    console.log(queryPair[1])
+    
     if (queryPair[1] != undefined) {
+        console.log(queryPair);
         let fund = queryPair[0].replace(/%20/g, ' ');
         let trimmed = queryPair[1].replace('[', '');
         trimmed = trimmed.replace(']', '');
@@ -18,8 +19,10 @@ let funds = query.reduce((memo, current) => {
             stat = stat.split(":");
 
             let statName = stat[0].replace(/%20/g, '');
-
-            statMap[stat[0]] = stat[1].replace('%', '');
+            // console.log(stat[1])
+            if (stat[1] != undefined) {
+                statMap[stat[0]] = stat[1].replace('%', '');
+            }
         })
         memo.set(fund, statMap);
     }
